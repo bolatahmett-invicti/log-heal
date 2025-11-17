@@ -1,0 +1,87 @@
+# AI Agent System Configuration
+
+# Elasticsearch Configuration
+elk:
+  host: localhost
+  port: 9200
+  username: elastic
+  password: changeme
+  index_pattern: "logs-*"
+  
+  # Log çekme ayarları
+  time_range_minutes: 60
+  severity_levels:
+    - ERROR
+    - CRITICAL
+    - FATAL
+  max_logs: 100
+
+# Git Configuration
+git:
+  repo_path: "."
+  default_branch: "main"
+  branch_prefix: "fix/"
+  
+  # Commit şablonu
+  commit_template: |
+    Fix: {error_type}
+    
+    {error_message}
+    
+    Severity: {severity}
+    Auto-generated fix by AI Agent System
+    Timestamp: {timestamp}
+
+# Agent Configuration
+agents:
+  log_analyzer:
+    enabled: true
+    model: "claude-sonnet-4-20250514"
+    max_tokens: 4000
+  
+  solution_architect:
+    enabled: true
+    model: "claude-sonnet-4-20250514"
+    max_tokens: 3000
+  
+  code_generator:
+    enabled: true
+    model: "claude-sonnet-4-20250514"
+    max_tokens: 4000
+  
+  git_manager:
+    enabled: true
+    auto_commit: true
+    auto_push: false  # Manuel push öneriliyor
+
+# File Handling
+files:
+  # Otomatik olarak yüklenecek dosya uzantıları
+  auto_load_extensions:
+    - .java
+    - .py
+    - .js
+    - .ts
+    - .go
+  
+  # İgnore edilecek klasörler
+  ignore_paths:
+    - node_modules/
+    - .git/
+    - __pycache__/
+    - dist/
+    - build/
+
+# Notification Configuration (opsiyonel)
+notifications:
+  slack:
+    enabled: false
+    webhook_url: ""
+    channel: "#dev-alerts"
+  
+  email:
+    enabled: false
+    smtp_host: ""
+    smtp_port: 587
+    from_email: ""
+    to_emails: []
