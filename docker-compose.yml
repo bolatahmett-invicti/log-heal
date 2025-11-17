@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  logheal:
+    build: .
+    container_name: logheal-app
+    ports:
+      - "8501:8501"
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ELK_HOST: ${ELK_HOST:-elasticsearch}
+      ELK_PORT: ${ELK_PORT:-9200}
+      ELK_USERNAME: ${ELK_USERNAME:-elastic}
+      ELK_PASSWORD: ${ELK_PASSWORD:-changeme}
+      APP_ENV: production
+      APP_LOG_LEVEL: WARNING
+    volumes:
+      - ./logs:/app/logs
+      - ./.env:/app/.env:ro
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    container_name: elasticsearch
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  elasticsearch-data:
